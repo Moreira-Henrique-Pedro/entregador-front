@@ -58,6 +58,10 @@ Não edite `schema.ts` à mão. Se um campo mudar de nome ou tipo, o `npm run bu
 
 [Vitest](https://vitest.dev) + [Testing Library](https://testing-library.com) + [MSW](https://mswjs.io). Os testes renderizam as telas como o usuário vê e o MSW simula a API (`src/test/server.ts`, com dados em memória tipados pelo contrato da API). Para simular uma falha num teste, sobrescreva a rota com `server.use(...)`.
 
+## CI
+
+`.github/workflows/ci.yml` roda a cada push e pull request em `main` e `develop`: lint (oxlint) + checagem de tipos, testes unitários e, se os dois passarem, o build (o `dist/` fica como artefato por 7 dias). O Dependabot abre PRs semanais com atualizações de dependências. A versão do Node fica em `.nvmrc`.
+
 ## Estrutura
 
 ```
