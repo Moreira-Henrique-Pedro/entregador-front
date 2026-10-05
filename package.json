@@ -1,0 +1,35 @@
+{
+  "name": "entregador-front",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@mantine/core": "^8.3.18",
+    "@mantine/form": "^8.3.18",
+    "@mantine/hooks": "^8.3.18",
+    "@mantine/modals": "^8.3.18",
+    "@mantine/notifications": "^8.3.18",
+    "@tabler/icons-react": "^3.48.0",
+    "@tanstack/react-query": "^5.104.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "oxlint": "^1.81.0",
+    "postcss": "^8.5.28",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.0"
+  }
+}
