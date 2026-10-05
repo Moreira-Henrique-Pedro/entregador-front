@@ -3,7 +3,7 @@ import type { Delivery, DeliveryFilter, NewDelivery, Resident } from './types'
 
 export const entregadorApi = {
   listDeliveries: (filter: DeliveryFilter) =>
-    request<Delivery[]>(`/v1/deliveries${queryString({ apartment: filter.apartment })}`),
+    request<Delivery[]>(`/v1/deliveries${queryString({ apartment: filter.apartment, status: filter.status })}`),
 
   createDelivery: (delivery: NewDelivery) =>
     request<Delivery>('/v1/deliveries', { method: 'POST', body: JSON.stringify(delivery) }),

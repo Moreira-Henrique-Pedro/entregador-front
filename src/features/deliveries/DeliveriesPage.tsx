@@ -1,16 +1,18 @@
-import { Alert, Button, Center, Group, Loader, Select, Stack, Text, Title } from '@mantine/core'
+import { Alert, Button, Center, Group, Loader, SegmentedControl, Select, Stack, Text, Title } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { IconAlertCircle, IconPlus } from '@tabler/icons-react'
 import { useState } from 'react'
 import { DeliveriesList } from './DeliveriesList'
 import { NewDeliveryModal } from './NewDeliveryModal'
+import { type StatusFilter, statusFilterOptions, statusOfFilter } from './labels'
 import { useApartments, useDeliveries } from './queries'
 
 export function DeliveriesPage() {
   const [apartment, setApartment] = useState<string | null>(null)
+  const [status, setStatus] = useState<StatusFilter>('pending')
   const [newDeliveryOpened, newDelivery] = useDisclosure(false)
   const apartments = useApartments()
-  const deliveries = useDeliveries({ apartment: apartment ?? undefined })
+  const deliveries = useDeliveries({ apartment: apartment ?? undefined, status: statusOfFilter(status) })
 
   return (
     <Stack>
@@ -21,16 +23,24 @@ export function DeliveriesPage() {
         </Button>
       </Group>
 
-      <Select
-        label="Apartamento"
-        placeholder="Todos"
-        data={apartments.data ?? []}
-        value={apartment}
-        onChange={setApartment}
-        searchable
-        clearable
-        maw={{ sm: 240 }}
-      />
+      <Group align="flex-end" gap="md">
+        <SegmentedControl
+          data={statusFilterOptions}
+          value={status}
+          onChange={(value) => setStatus(value as StatusFilter)}
+          w={{ base: '100%', sm: 'auto' }}
+        />
+        <Select
+          label="Apartamento"
+          placeholder="Todos"
+          data={apartments.data ?? []}
+          value={apartment}
+          onChange={setApartment}
+          searchable
+          clearable
+          w={{ base: '100%', sm: 240 }}
+        />
+      </Group>
 
       <DeliveriesContent state={deliveries} />
 
