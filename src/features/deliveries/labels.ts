@@ -10,6 +10,18 @@ export const statusColors: Record<DeliveryStatus, string> = {
   deleted: 'green',
 }
 
+export type StatusFilter = DeliveryStatus | 'all'
+
+export const statusFilterOptions: { value: StatusFilter; label: string }[] = [
+  { value: 'pending', label: 'Aguardando retirada' },
+  { value: 'deleted', label: 'Retiradas' },
+  { value: 'all', label: 'Todas' },
+]
+
+export function statusOfFilter(filter: StatusFilter): DeliveryStatus | undefined {
+  return filter === 'all' ? undefined : filter
+}
+
 export const packageTypeOptions = [
   { value: 'caixa', label: 'Caixa' },
   { value: 'envelope', label: 'Envelope' },

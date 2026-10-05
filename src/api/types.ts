@@ -1,36 +1,11 @@
-export type DeliveryStatus = 'pending' | 'deleted'
+import type { components, operations } from './schema'
 
-export interface Delivery {
-  delivery_id: string
-  apartment: string
-  resident_id: string
-  resident_name?: string
-  package_type: string
-  urgency: string
-  status: DeliveryStatus
-  created_at: string
-  updated_at: string
-  deleted_at?: string
-}
+type Schemas = components['schemas']
 
-export interface NewDelivery {
-  apartment: string
-  resident_id: string
-  package_type: string
-  urgency: string
-}
+export type Delivery = Schemas['Delivery']
+export type DeliveryStatus = Schemas['DeliveryStatus']
+export type NewDelivery = Schemas['RegisterDeliveryRequest']
+export type DeliveryFilter = NonNullable<operations['listDeliveries']['parameters']['query']>
 
-export interface DeliveryFilter {
-  apartment?: string
-}
-
-export type ResidentType = 'resident-primary' | 'resident-secondary' | 'other'
-
-export interface Resident {
-  resident_id: string
-  name: string
-  apartment: string
-  phone: string
-  type: ResidentType
-  status: string
-}
+export type Resident = Schemas['Resident']
+export type ResidentType = Schemas['ResidentType']

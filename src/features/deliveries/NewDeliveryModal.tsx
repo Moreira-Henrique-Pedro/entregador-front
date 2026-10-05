@@ -6,14 +6,16 @@ import type { NewDelivery } from '../../api/types'
 import { packageTypeOptions, residentOptions, urgencyOptions } from './labels'
 import { useApartments, useCreateDelivery, useResidents } from './queries'
 
-const emptyDelivery: NewDelivery = { apartment: '', resident_id: '', package_type: '', urgency: '' }
+type NewDeliveryForm = Required<NewDelivery>
+
+const emptyDelivery: NewDeliveryForm = { apartment: '', resident_id: '', package_type: '', urgency: '' }
 
 export function NewDeliveryModal({ opened, onClose }: { opened: boolean; onClose: () => void }) {
   const isMobile = useMediaQuery('(max-width: 48em)')
   const createDelivery = useCreateDelivery()
   const apartments = useApartments()
 
-  const form = useForm<NewDelivery>({
+  const form = useForm<NewDeliveryForm>({
     mode: 'controlled',
     initialValues: emptyDelivery,
     validate: {
@@ -31,7 +33,7 @@ export function NewDeliveryModal({ opened, onClose }: { opened: boolean; onClose
     onClose()
   }
 
-  const submit = (delivery: NewDelivery) =>
+  const submit = (delivery: NewDeliveryForm) =>
     createDelivery.mutate(delivery, {
       onSuccess: () => {
         notifications.show({ color: 'green', message: 'Entrega registrada. O morador será avisado pelo WhatsApp.' })
