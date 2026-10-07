@@ -1,5 +1,17 @@
 const baseUrl: string = import.meta.env.VITE_API_URL ?? ''
 
+type AuthHandlers = {
+  getToken: () => Promise<string | null>
+  onUnauthorized: () => void
+}
+
+let auth: AuthHandlers | null = null
+
+// Set by the AuthProvider: every request carries the logged user's token.
+export function configureAuth(handlers: AuthHandlers | null) {
+  auth = handlers
+}
+
 export class ApiError extends Error {
   readonly status: number
 
@@ -11,11 +23,19 @@ export class ApiError extends Error {
 }
 
 export async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const token = await auth?.getToken()
   const response = await fetch(`${baseUrl}${path}`, {
     ...init,
-    headers: { 'Content-Type': 'application/json', ...init.headers },
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...init.headers,
+    },
   })
 
+  if (response.status === 401) {
+    auth?.onUnauthorized()
+  }
   if (!response.ok) {
     throw new ApiError(response.status, await errorMessage(response))
   }

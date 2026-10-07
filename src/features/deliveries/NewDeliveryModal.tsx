@@ -1,4 +1,4 @@
-import { Button, Group, Modal, Select, Stack } from '@mantine/core'
+import { Button, Group, Modal, Select, Stack, type ComboboxProps } from '@mantine/core'
 import { isNotEmpty, useForm } from '@mantine/form'
 import { useMediaQuery } from '@mantine/hooks'
 import { notifications } from '@mantine/notifications'
@@ -10,8 +10,15 @@ type NewDeliveryForm = Required<NewDelivery>
 
 const emptyDelivery: NewDeliveryForm = { apartment: '', resident_id: '', package_type: '', urgency: '' }
 
+// On a phone, render the dropdowns inside the full screen modal: in a portal, a dropdown that
+// crosses the screen edge widens the page on mobile Chrome, the modal widens with it, the field
+// moves, the dropdown hides, the page shrinks back and it shows again, in a loop (flickering).
+// Not flipping keeps the dropdown below the field when the keyboard resizes the screen.
+const mobileComboboxProps: ComboboxProps = { withinPortal: false, middlewares: { flip: false, shift: true } }
+
 export function NewDeliveryModal({ opened, onClose }: { opened: boolean; onClose: () => void }) {
-  const isMobile = useMediaQuery('(max-width: 48em)')
+  const isMobile = useMediaQuery('(max-width: 48em)', undefined, { getInitialValueInEffect: false })
+  const comboboxProps = isMobile ? mobileComboboxProps : undefined
   const createDelivery = useCreateDelivery()
   const apartments = useApartments()
 
@@ -50,6 +57,8 @@ export function NewDeliveryModal({ opened, onClose }: { opened: boolean; onClose
             label="Apartamento"
             placeholder="Selecione"
             searchable
+            comboboxProps={comboboxProps}
+            maxDropdownHeight={isMobile ? 200 : undefined}
             data={apartments.data ?? []}
             disabled={apartments.isLoading}
             nothingFoundMessage="Nenhum apartamento com moradores"
@@ -62,12 +71,25 @@ export function NewDeliveryModal({ opened, onClose }: { opened: boolean; onClose
           <Select
             label="Morador"
             placeholder={form.values.apartment ? 'Selecione' : 'Selecione o apartamento primeiro'}
+            comboboxProps={comboboxProps}
             data={residentOptions(residents.data ?? [])}
             disabled={!form.values.apartment || residents.isLoading}
             {...form.getInputProps('resident_id')}
           />
-          <Select label="Tipo do pacote" placeholder="Selecione" data={packageTypeOptions} {...form.getInputProps('package_type')} />
-          <Select label="Urgência" placeholder="Selecione" data={urgencyOptions} {...form.getInputProps('urgency')} />
+          <Select
+            label="Tipo do pacote"
+            placeholder="Selecione"
+            comboboxProps={comboboxProps}
+            data={packageTypeOptions}
+            {...form.getInputProps('package_type')}
+          />
+          <Select
+            label="Urgência"
+            placeholder="Selecione"
+            comboboxProps={comboboxProps}
+            data={urgencyOptions}
+            {...form.getInputProps('urgency')}
+          />
           <Group justify="flex-end" mt="md">
             <Button variant="default" onClick={close}>
               Cancelar

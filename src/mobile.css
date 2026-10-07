@@ -1,0 +1,6 @@
+/* iOS zooms the page when a field under 16px gets focus, shifting the whole layout. */
+@media (max-width: 48em) {
+  .mantine-Input-input {
+    font-size: 16px;
+  }
+}
