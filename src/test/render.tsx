@@ -5,8 +5,10 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ReactElement } from 'react'
+import type { AuthClient } from '../auth/authClient'
+import { AuthProvider } from '../auth/AuthProvider'
 
-export function renderWithProviders(ui: ReactElement) {
+export function renderWithProviders(ui: ReactElement, { auth }: { auth?: AuthClient } = {}) {
   const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })
 
   return {
@@ -16,7 +18,7 @@ export function renderWithProviders(ui: ReactElement) {
         <QueryClientProvider client={queryClient}>
           <ModalsProvider>
             <Notifications />
-            {ui}
+            {auth ? <AuthProvider client={auth}>{ui}</AuthProvider> : ui}
           </ModalsProvider>
         </QueryClientProvider>
       </MantineProvider>,

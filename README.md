@@ -1,8 +1,8 @@
 # entregador-front
 
-Front web da portaria do [Entregador](https://github.com/Moreira-Henrique-Pedro/entregador): lista as entregas, registra novas e marca como retiradas. Responsivo (PC e celular).
+Front web da portaria do [Entregador](https://github.com/Moreira-Henrique-Pedro/entregador): login, lista as entregas, registra novas e marca como retiradas. Responsivo (PC e celular).
 
-Stack: Vite + React + TypeScript, [Mantine](https://mantine.dev) (componentes), [TanStack Query](https://tanstack.com/query) (chamadas à API).
+Stack: Vite + React + TypeScript, [Mantine](https://mantine.dev) (componentes), [TanStack Query](https://tanstack.com/query) (chamadas à API), [Firebase Auth](https://firebase.google.com/docs/auth) (login).
 
 ## Rodando
 
@@ -15,6 +15,22 @@ npm run dev     # http://localhost:5173
 ```
 
 Em desenvolvimento, o front chama a API pelo próprio endereço (`/v1/...`) e o Vite repassa para `API_PROXY_TARGET` (`.env.development`: `http://localhost:8081`). Por isso não precisa de CORS nem de IP fixo. Em produção, defina `VITE_API_URL` com a URL da API no build.
+
+### Login
+
+O front sempre pede login (e-mail e senha, Firebase Auth) e envia o token em `Authorization: Bearer` em toda chamada à API. Só entra quem tem o papel `doorman` (porteiro) ou `admin` (síndico). Se a API responder 401 (sessão expirada ou revogada), o front volta para o login.
+
+Localmente o login usa o emulador do Firebase Auth que sobe junto com a API (`make up`), configurado em `.env.development` (`VITE_FIREBASE_AUTH_EMULATOR=true`). O navegador chama o emulador pelo próprio endereço do front e o Vite repassa para `FIREBASE_AUTH_EMULATOR_TARGET` (`http://localhost:9099`), como faz com a API. Por isso o login também funciona no celular. Crie um porteiro no repositório da API:
+
+```bash
+make create-doorman EMAIL=porteiro@entregador.local NAME="Porteiro Local" PASSWORD=porteiro123
+```
+
+O emulador guarda os usuários em memória: ao reiniciar o container, crie de novo. Para a API também exigir o token, troque `AUTH_ENABLED` para `true` no `.env.test` dela.
+
+"Esqueceu a senha?" envia o link de redefinição pelo Firebase. O emulador não manda e-mail: o link aparece na UI dele (http://localhost:4000/auth).
+
+Em produção, preencha `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN` e `VITE_FIREBASE_PROJECT_ID` com a configuração do web app (console do Firebase → Project settings → Your apps) e deixe `VITE_FIREBASE_AUTH_EMULATOR` desligado.
 
 ### Testar no celular
 
@@ -66,10 +82,11 @@ Não edite `schema.ts` à mão. Se um campo mudar de nome ou tipo, o `npm run bu
 
 ```
 src/
-├── api/                     # Cliente HTTP, tipos (gerados do OpenAPI) e chamadas da API
+├── api/                     # Cliente HTTP (com o token do login), tipos (gerados do OpenAPI) e chamadas da API
+├── auth/                    # Login, esqueceu a senha, sessão (AuthProvider) e cliente do Firebase Auth
 ├── components/              # Componentes compartilhados (ex.: botão de tema)
 ├── features/deliveries/     # Tela de entregas: lista, ações, modal de nova entrega, queries
-├── App.tsx                  # Layout (cabeçalho + página)
+├── App.tsx                  # Login ou layout (cabeçalho com Sair + página)
 ├── main.tsx                 # Providers: Mantine, React Query, modais e notificações
-└── test/                    # Setup dos testes, servidor MSW, fixtures e render com providers
+└── test/                    # Setup dos testes, servidor MSW, login falso, fixtures e render com providers
 ```
